@@ -7,19 +7,19 @@ Run server.java file using java or in any IDE. It will start listening on port 8
 
 ##### Sample curl requests. 
 
-1. ```
-
-curl -X POST \
+1.
+`curl -X POST \
   http://localhost:8080/ \
   -H 'cache-control: no-cache' \
   -H 'content-type: application/json' \
   -d '{
 	"hi":1
 }'
-
+`
+`
 curl -X GET \
   http://localhost:8080/ \
   -H 'cache-control: no-cache' \
   -H 'content-type: application/json' \
-```
+`
 
