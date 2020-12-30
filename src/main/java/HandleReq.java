@@ -95,7 +95,11 @@ public class HandleReq implements Runnable {
                 } else if ("POST".equals(method)) {
                     String body = parseBody(contentLength, reader);
                     sendResponse(writer, "Post method is called. body is: " + body);
-                } else {
+                }
+                else if("HEAD".equals(method)){
+                    sendResponse(writer,"");
+                }
+                else {
                     sendResponse(writer, "Method not implemented");
                 }
             }
