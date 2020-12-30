@@ -15,6 +15,7 @@ public class HandleReq implements Runnable {
     Map.Entry<String, String> parseMethodAndEndpoint(BufferedReader reader) throws Exception {
         String line = reader.readLine();
         System.out.println(line);
+        if(line==null) return null;
         String[] arr = line.split("\\s+");
         String[] path = arr[1].split("\\?"); //split into path and query string
         Map.Entry entry = new AbstractMap.SimpleImmutableEntry(arr[0], path[0]);
@@ -43,10 +44,11 @@ public class HandleReq implements Runnable {
     void sendResponse(PrintWriter writer, String data) {
         writer.println("HTTP/1.1 200 OK");
         writer.println("Content-Type: text/plain");
-        writer.println("Content-Length: " + data.length());
+        writer.println("Content-Length: " + ((data.getBytes().length)));
         writer.println("Keep-Alive: timeout=60, max=1000");
         writer.println();
-        writer.println(data);
+        writer.print(data);
+        writer.flush();
     }
 
     String parseBody(int len, BufferedReader reader) throws Exception {
@@ -66,39 +68,50 @@ public class HandleReq implements Runnable {
     @Override
     public void run() {
         if (socket == null) return;
+        BufferedReader reader = null;
+        PrintWriter writer = null;
         try {
 
             System.out.println("Connection accepted for client: " + socket.getRemoteSocketAddress());
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-            Map.Entry<String, String> entry = parseMethodAndEndpoint(reader);
-            String method = entry.getKey();
-            String url = entry.getValue();
-            int contentLength = getContentLength(reader);
-            Random r = new Random();
-            if ("GET".equals(method)) {
-                switch (url) {
-                    case "/":
-                        sendResponse(writer, "Hello from naive http-server");
-                        break;
-                    case "/id":
-                        sendResponse(writer, "generated id is: " + r.nextInt());
-                        break;
-                    default:
-                        sendResponse(writer, "Default response");
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            writer = new PrintWriter(socket.getOutputStream(), true);
+            Map.Entry<String, String> entry = null;
+            while ((entry = parseMethodAndEndpoint(reader)) != null) {
+                String method = entry.getKey();
+                String url = entry.getValue();
+                int contentLength = getContentLength(reader);
+                Random r = new Random();
+                if ("GET".equals(method)) {
+                    switch (url) {
+                        case "/":
+                            sendResponse(writer, "Hello from naive http-server");
+                            break;
+                        case "/id":
+                            sendResponse(writer, "generated id is: " + r.nextInt());
+                            break;
+                        default:
+                            sendResponse(writer, "Default response");
+                    }
+                } else if ("POST".equals(method)) {
+                    String body = parseBody(contentLength, reader);
+                    sendResponse(writer, "Post method is called. body is: " + body);
+                } else {
+                    sendResponse(writer, "Method not implemented");
                 }
-            } else if ("POST".equals(method)) {
-                String body = parseBody(contentLength, reader);
-                sendResponse(writer, "Post method is called. body is: " + body);
-            } else {
-                sendResponse(writer, "Method not implemented");
             }
-            reader.close();
-            writer.close();
-            socket.close();
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
+
+        // close reader, writer and socket
+        try{
+            if(reader != null)reader.close();
+            if(writer != null)writer.close();
+            if(socket != null)socket.close();
+        }catch (Exception e){
+
+        }
+
     }
 
     public HandleReq(Socket socket) {

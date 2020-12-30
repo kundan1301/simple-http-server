@@ -11,9 +11,9 @@ public class Server {
             ServerSocket serverSocket = new ServerSocket(8080);
             while (true){
                 Socket conn = serverSocket.accept();
-                System.out.println("Accepted Connection: "+ conn.getRemoteSocketAddress());
                 Runnable handleReq = new HandleReq(conn);
                 executorService.execute(handleReq);
+                System.out.println("connection dispatched");
             }
         }catch (Exception e){
             System.out.println(e);
