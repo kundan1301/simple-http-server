@@ -9,14 +9,22 @@ import java.util.Random;
 public class HandleReq implements Runnable {
     private Socket socket;
 
+    /*
+    *  Consume first line of http request (Method, path and version)
+    * */
     Map.Entry<String, String> parseMethodAndEndpoint(BufferedReader reader) throws Exception {
         String line = reader.readLine();
         System.out.println(line);
         String[] arr = line.split("\\s+");
-        String[] path = arr[1].split("\\?");
+        String[] path = arr[1].split("\\?"); //split into path and query string
         Map.Entry entry = new AbstractMap.SimpleImmutableEntry(arr[0], path[0]);
         return entry;
     }
+
+    /*
+    * Consume headers and return content length;
+    * headers are separated from body via a newline
+    * */
 
     int getContentLength(BufferedReader reader) throws Exception {
         String line = null;
@@ -46,7 +54,9 @@ public class HandleReq implements Runnable {
         int i = 0;
         StringBuilder sb = new StringBuilder();
         while (i < len) {
-            sb.append((char) reader.read());
+            int c = reader.read();
+            if(c == -1) break;
+            sb.append((char)c);
             i++;
         }
         System.out.println(sb.toString());
