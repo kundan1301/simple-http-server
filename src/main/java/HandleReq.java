@@ -81,6 +81,7 @@ public class HandleReq implements Runnable {
                 String method = entry.getKey();
                 String url = entry.getValue();
                 int contentLength = getContentLength(reader);
+                String body = parseBody(contentLength, reader);
                 Random r = new Random();
                 if ("GET".equals(method)) {
                     switch (url) {
@@ -95,7 +96,6 @@ public class HandleReq implements Runnable {
                     }
                 }
                 else if ("POST".equals(method)) {
-                    String body = parseBody(contentLength, reader);
                     sendResponse(writer, "Post method is called. body is: " + body);
                 }
                 else if("HEAD".equals(method)){
