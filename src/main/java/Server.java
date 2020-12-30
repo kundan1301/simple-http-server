@@ -13,7 +13,7 @@ public class Server {
                 Socket conn = serverSocket.accept();
                 Runnable handleReq = new HandleReq(conn);
                 executorService.execute(handleReq);
-                System.out.println("connection dispatched");
+                System.out.println("Connection Dispatched");
             }
         }catch (Exception e){
             System.out.println(e);

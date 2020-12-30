@@ -67,15 +67,16 @@ public class HandleReq implements Runnable {
 
     @Override
     public void run() {
-        if (socket == null) return;
+        if (socket == null || socket.isClosed()) return;
         BufferedReader reader = null;
         PrintWriter writer = null;
         try {
-
             System.out.println("Connection accepted for client: " + socket.getRemoteSocketAddress());
+
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             writer = new PrintWriter(socket.getOutputStream(), true);
             Map.Entry<String, String> entry = null;
+
             while ((entry = parseMethodAndEndpoint(reader)) != null) {
                 String method = entry.getKey();
                 String url = entry.getValue();
@@ -92,7 +93,8 @@ public class HandleReq implements Runnable {
                         default:
                             sendResponse(writer, "Default response");
                     }
-                } else if ("POST".equals(method)) {
+                }
+                else if ("POST".equals(method)) {
                     String body = parseBody(contentLength, reader);
                     sendResponse(writer, "Post method is called. body is: " + body);
                 }
@@ -113,7 +115,7 @@ public class HandleReq implements Runnable {
             if(writer != null)writer.close();
             if(socket != null)socket.close();
         }catch (Exception e){
-
+            System.out.println(e);
         }
 
     }
