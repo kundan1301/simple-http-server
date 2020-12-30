@@ -9,22 +9,22 @@ Run server.java file using java or in any IDE. It will start listening on port 8
 
 ```
 1. curl -X POST \
-	  http://localhost:8080/ \
-	  -H 'cache-control: no-cache' \
-	  -H 'content-type: application/json' \
-	  -d '{
-		"hi":1
-	}'
+  http://localhost:8080/ \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json' \
+  -d '{
+	"hi":1
+}'
 
 2. curl -X GET \
-	  http://localhost:8080/ \
-	  -H 'cache-control: no-cache' \
-	  -H 'content-type: application/json' 
-  
+  http://localhost:8080/ \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json' 
+
 3. curl -X GET \
-	  http://localhost:8080/id \
-	  -H 'cache-control: no-cache' \
-	  -H 'content-type: application/json' 
+  http://localhost:8080/id \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json' 
   
 ```
 
